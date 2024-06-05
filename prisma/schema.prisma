@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl= env("DIRECT_URL")
+}
+model User {
+  user_id    Int    @id @default(autoincrement())
+  email      String @unique
+  name       String?
+  age        Int?
+
+  orders     Order[]
+}
+
+model Restaurant {
+  restaurant_id Int      @id @default(autoincrement())
+  name          String
+  address       String
+  availability  String
+  
+  menus         Menu[]
+  orders        Order[]
+}
+
+model Menu {
+  menu_id        Int        @id @default(autoincrement())
+  item           String
+  price          Decimal
+  restaurant_id  Int
+  restaurant     Restaurant @relation(fields: [restaurant_id], references: [restaurant_id])
+  orders         Order[]
+}
+
+model Agent {
+  agent_id     Int      @id @default(autoincrement())
+  name         String
+  rating       Int?
+  availability Boolean  @default(true)
+  orders       Order[]
+}
+
+model Order {
+  order_serial_no  Int        @id @default(autoincrement())
+  order_id         String        
+  rating           Int?
+  accept_status    String?
+  delivery_status  String?
+  delivery_address String
+  quantity         Int        @default(1)
+  restaurant_id    Int
+  restaurant       Restaurant @relation(fields: [restaurant_id], references: [restaurant_id])
+  user_id          Int
+  user             User       @relation(fields: [user_id], references: [user_id])
+  agent_id         Int?
+  agent            Agent?      @relation(fields: [agent_id], references: [agent_id])
+  menu_id          Int
+  menu             Menu      @relation(fields: [menu_id], references: [menu_id])
+}
