@@ -81,7 +81,7 @@ const approveOrder = async (req, res) => {
     }
 
     // Assign agent to order
-    const availableAgent = await assignAgentToOrder();
+    const {agentId} = await assignAgentToOrder();
     
     // Update the order with accept_status and delivery_status
     await prisma.order.updateMany({
@@ -89,13 +89,13 @@ const approveOrder = async (req, res) => {
       data: {
         accept_status:acceptStatus,
         delivery_status:deliveryStatus,
-        agent_id: availableAgent.agent_id,
+        agent_id: agentId,
       },
     });
 
     // Update the agent's availability to false
     await prisma.agent.update({
-      where: { agent_id: availableAgent.agent_id },
+      where: { agent_id: agentId },
       data: {
         availability: false,
       },

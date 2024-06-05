@@ -1,8 +1,11 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const { v4: uuidv4 } = require('uuid');
+const redisClient = require('../config/redisClient');
 
 const getAllRestaurants=async (req,res)=>{
+
+    
     try {
         const restaurants = await prisma.restaurant.findMany({
           where: { availability :'online' },
