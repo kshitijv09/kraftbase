@@ -20,7 +20,7 @@ const fetchMenuDetails = async (menuId) => {
     if (!menu) {
       throw new Error(`Menu item with ID ${menuId} not found`);
     }
-    await redisClient.set(cacheKey, JSON.stringify(menu.price)); // Cache for 1 hour
+    await redisClient.set(cacheKey, JSON.stringify(menu.price)); 
 
     return menu.price;
   } catch (error) {
