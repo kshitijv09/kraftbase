@@ -12,17 +12,19 @@ const addRestaurant=async (req,res)=>{
             availability,
             menus: {
               create: menus,
-            },
-            include:{
-              menus:true,
             }
           },
         });
-    
-        res.status(201).json(newRestaurant);
+        
+        const createdRestaurant = await prisma.restaurant.findUnique({
+          where: { restaurant_id: newRestaurant.restaurant_id },
+          include: { menus: true }
+        });
+
+        res.status(201).json(createdRestaurant);
       } catch (error) {
         console.error('Error adding restaurant:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error:error.message });
       }
 }
 
@@ -43,7 +45,7 @@ const updateRestaurantDetails=async(req,res)=>{
               if (menu.menu_id) {
             
                 await prisma.menu.update({
-                  where: { menu_id: menu.menu_id },
+                  where: { menu_id: menu.menu_id,restaurant_id:parseInt(id) },
                   data: {
                     item: menu.item,
                     price: menu.price,
@@ -66,7 +68,7 @@ const updateRestaurantDetails=async(req,res)=>{
     }
     catch(error){
         console.error('Error updating restaurant:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: error.message });
 
     }
 }
@@ -79,7 +81,7 @@ const approveOrder = async (req, res) => {
     if (acceptStatus === 'reject') {
       return res.status(400).json({ error: 'Order rejected.' });
     }
-
+    
     // Assign agent to order
     const {agentId} = await assignAgentToOrder();
     
@@ -102,11 +104,12 @@ const approveOrder = async (req, res) => {
     });
 
     const updatedOrder=await prisma.order.findMany({where:{order_id:id}})
+    let totalAmount = updatedOrder.reduce((sum, order) => sum + parseFloat(order.amount), 0);
 
-    res.status(200).json(updatedOrder);
+    res.status(200).json({totalAmount,updatedOrder});
   } catch (error) {
     console.error('Error updating order:', error);
-    res.status(500).json({ error: 'Internal server error' });
+    res.status(500).json({ error: error.message });
   }
 }
 

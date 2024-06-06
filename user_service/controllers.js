@@ -1,11 +1,9 @@
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
+const {fetchMenuDetails, validateOrder}=require("./services")
 const { v4: uuidv4 } = require('uuid');
-const redisClient = require('../config/redisClient');
 
 const getAllRestaurants=async (req,res)=>{
-
-    
     try {
         const restaurants = await prisma.restaurant.findMany({
           where: { availability :'online' },
@@ -17,37 +15,46 @@ const getAllRestaurants=async (req,res)=>{
         res.json(restaurants);
       } catch (error) {
         console.error('Error fetching restaurants:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: error.message });
       }
 }
 
-const createOrder=async(req,res)=>{
-    const { restaurantId, menuItems, userId,deliveryAddress } = req.body;
-
+const placeOrder = async (req, res) => {
+    const { restaurantId, menuItems, userId, deliveryAddress } = req.body;
+    let totalAmount = 0;
+  
     try {
-      // Create an order for each menu item
-      const order_id=uuidv4()
+      await validateOrder(restaurantId, menuItems);
+      const order_id = uuidv4();
+  
+      // Create an order for each menu item and calculate the total amount
+      
       const orders = await Promise.all(
-        menuItems.map(menu =>
-          prisma.order.create({
+        menuItems.map(async (menu) => {
+          const  price  = await fetchMenuDetails(menu.menuId);
+          const amount = parseFloat(parseInt(menu.quantity) * price).toFixed(2);
+          totalAmount += parseFloat(amount);
+  
+          return prisma.order.create({
             data: {
               order_id,
-              restaurant_id:parseInt(restaurantId),
-              menu_id:parseInt(menu.menuId),
-              user_id:parseInt(userId),
-              quantity:parseInt(menu.quantity),
-              delivery_address:deliveryAddress
+              restaurant_id: parseInt(restaurantId),
+              menu_id: parseInt(menu.menuId),
+              user_id: parseInt(userId),
+              quantity: parseInt(menu.quantity),
+              delivery_address: deliveryAddress,
+              amount: parseFloat(amount),
             },
-          })
-        )
+          });
+        })
       );
   
-      res.status(201).json(orders);
+      res.status(201).json({ orderId:orders[0].order_id,orders, totalAmount: totalAmount.toFixed(2) });
     } catch (error) {
       console.error('Error creating order:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      res.status(500).json({ error: error.message });
     }
-}
+  };
 
 const rateOrder = async (req, res) => {
     const { id } = req.params;
@@ -75,7 +82,7 @@ const rateOrder = async (req, res) => {
       res.status(200).json(updatedOrder);
     } catch (error) {
       console.error('Error updating order rating:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      res.status(500).json({ error: error.message });
     }
   }
 
@@ -84,18 +91,38 @@ const rateOrder = async (req, res) => {
     const { rating } = req.body;
   
     try {
-      const updatedAgent = await prisma.Agent.update({
-        where: { agent_id: parseInt(id) },
-        data: {
-          rating: parseInt(rating),
-        },
-      });
+        const agent = await prisma.agent.findUnique({
+            where: { agent_id: parseInt(id) },
+            select: { rating: true, deliveryCount: true },
+          });
+      
+          if (!agent) {
+            throw new Error('Agent not found');
+          }
+      
+          const { rating: prevRating, deliveryCount } = agent;
+      
+          // Calculate the new rating and update completed deliveries
+          const newRating = (prevRating * deliveryCount + parseInt(rating)) / (deliveryCount + 1);
+      
+          // Update the agent with the new rating and increment completed deliveries
+          const updatedAgent = await prisma.agent.update({
+            where: { agent_id: parseInt(id) },
+            data: {
+              rating: parseFloat(newRating).toFixed(2),
+              deliveryCount: {
+                increment: 1,
+              },
+            },
+          });
+      
+         
   
       res.status(200).json(updatedAgent);
     } catch (error) {
       console.error('Error updating agent rating:', error);
-      res.status(500).json({ error: 'Internal server error' });
+      res.status(500).json({ error: error.message });
     }
   }
 
-module.exports={createOrder,rateAgent,rateOrder,getAllRestaurants}
+module.exports={placeOrder,rateAgent,rateOrder,getAllRestaurants}

@@ -2,10 +2,6 @@ const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 const redisClient=require('../config/redisClient')
 
-
-const redis = require('redis');
-const client = redis.createClient({ host: 'localhost', port: 6379 });
-
 const assignAgentToOrder = async () => {
   try {
     const cacheKey = 'availableAgents';

@@ -35,7 +35,7 @@ model Restaurant {
 model Menu {
   menu_id        Int        @id @default(autoincrement())
   item           String
-  price          Decimal
+  price          Int
   restaurant_id  Int
   restaurant     Restaurant @relation(fields: [restaurant_id], references: [restaurant_id])
   orders         Order[]
@@ -44,19 +44,21 @@ model Menu {
 model Agent {
   agent_id     Int      @id @default(autoincrement())
   name         String
-  rating       Int?
+  rating       Decimal? @default(4)
   availability Boolean  @default(true)
+  deliveryCount Int @default(0)
   orders       Order[]
 }
 
 model Order {
   order_serial_no  Int        @id @default(autoincrement())
   order_id         String        
-  rating           Int?
-  accept_status    String?
+  rating           Int?       
+  accept_status    String?    @default("pending")
   delivery_status  String?
   delivery_address String
   quantity         Int        @default(1)
+  amount           Decimal  
   restaurant_id    Int
   restaurant       Restaurant @relation(fields: [restaurant_id], references: [restaurant_id])
   user_id          Int
