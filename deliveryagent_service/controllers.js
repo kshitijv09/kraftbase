@@ -25,7 +25,7 @@ const updateDeliveryStatus = async (req, res) => {
             where: { order_id: id },
           });
   
-      res.status(200).json(updatedOrders);
+      res.status(200).json({updatedOrders});
     } catch (error) {
       console.error('Error updating delivery status:', error);
       res.status(500).json({ error: 'Internal server error' });

@@ -12,7 +12,7 @@ const getAllRestaurants=async (req,res)=>{
           },
         });
     
-        res.json(restaurants);
+        res.json({restaurants});
       } catch (error) {
         console.error('Error fetching restaurants:', error);
         res.status(500).json({ error: error.message });
@@ -79,7 +79,7 @@ const rateOrder = async (req, res) => {
 
           const updatedOrder=await prisma.order.findMany({where:{order_id:id}})
   
-      res.status(200).json(updatedOrder);
+      res.status(200).json({updatedOrder});
     } catch (error) {
       console.error('Error updating order rating:', error);
       res.status(500).json({ error: error.message });
