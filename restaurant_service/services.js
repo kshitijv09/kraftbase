@@ -8,7 +8,7 @@ const assignAgentToOrder = async () => {
     const cachedData = await getFromCache(cacheKey);
 
     if (cachedData) {
-      // If cache exists, retrieve and remove the first agent ID
+      
       const availableAgents = JSON.parse(cachedData);
       if (availableAgents.length > 0) {
         const agentId = availableAgents.shift();

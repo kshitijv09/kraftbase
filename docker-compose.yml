@@ -4,9 +4,9 @@ services:
   postgres:
     image: postgres:13
     environment:
-      POSTGRES_USER: postgres.hrbsivllunsxkqarpxhb
-      POSTGRES_PASSWORD: Surajpura@1
-      POSTGRES_DB: postgres
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
       - "5432:5432"
     volumes:
@@ -17,10 +17,12 @@ services:
     depends_on:
       - postgres
     environment:
-      DATABASE_URL: postgres://postgres.hrbsivllunsxkqarpxhb:Surajpura@1@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres
+      DATABASE_URL: ${DATABASE_URL}
     ports:
       - "3000:3000"
     command: ["sh", "-c", "npx prisma migrate deploy && npm start"]
+    env_file:
+      - .env
 
 volumes:
   pgdata:

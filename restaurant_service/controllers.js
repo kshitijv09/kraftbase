@@ -82,10 +82,8 @@ const approveOrder = async (req, res) => {
       return res.status(400).json({ error: 'Order rejected.' });
     }
     
-    // Assign agent to order
     const {agentId} = await assignAgentToOrder();
     
-    // Update the order with accept_status and delivery_status
     await prisma.order.updateMany({
       where: { order_id: id },
       data: {
@@ -95,7 +93,6 @@ const approveOrder = async (req, res) => {
       },
     });
 
-    // Update the agent's availability to false
     await prisma.agent.update({
       where: { agent_id: agentId },
       data: {

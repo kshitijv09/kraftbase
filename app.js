@@ -1,9 +1,5 @@
 const express = require('express');
-const { PrismaClient } = require('@prisma/client');
 require("dotenv").config();
-
-// Initialize Prisma Client
-const prisma = new PrismaClient();
 
 const app = express();
 
@@ -14,13 +10,10 @@ const restaurantRouter = require("./restaurant_service/routes");
 const deliveryRouter = require("./deliveryagent_service/routes");
 const helperRouter=require("./helper/routes")
 
-
 app.use("/user",userRouter)
 app.use("/restaurant",restaurantRouter)
 app.use("/agent",deliveryRouter)
 app.use("/helper",helperRouter)
-
-
 
 const PORT = process.env.PORT || 3000;
 const start = () => {

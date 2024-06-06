@@ -26,8 +26,6 @@ const placeOrder = async (req, res) => {
     try {
       await validateOrder(restaurantId, menuItems);
       const order_id = uuidv4();
-  
-      // Create an order for each menu item and calculate the total amount
       
       const orders = await Promise.all(
         menuItems.map(async (menu) => {
@@ -65,7 +63,6 @@ const rateOrder = async (req, res) => {
             where: { order_id: id },
           });
       
-          // Update the rating for each order
           await Promise.all(
             orders.map(order =>
               prisma.order.updateMany({
@@ -102,10 +99,8 @@ const rateOrder = async (req, res) => {
           
           const { rating, deliveryCount } = agent;
       
-          // Calculate the new rating and update completed deliveries
           const updatedRating = (parseInt(rating) * parseInt(deliveryCount) + parseInt(newRating)) / (deliveryCount + 1);
       
-          // Update the agent with the new rating and increment completed deliveries
           const updatedAgent = await prisma.agent.update({
             where: { agent_id: parseInt(id) },
             data: {
