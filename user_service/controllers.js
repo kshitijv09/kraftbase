@@ -88,7 +88,7 @@ const rateOrder = async (req, res) => {
 
   const rateAgent = async (req, res) => {
     const { id } = req.params;
-    const { rating } = req.body;
+    const { newRating } = req.body;
   
     try {
         const agent = await prisma.agent.findUnique({
@@ -99,17 +99,17 @@ const rateOrder = async (req, res) => {
           if (!agent) {
             throw new Error('Agent not found');
           }
-      
-          const { rating: prevRating, deliveryCount } = agent;
+          
+          const { rating, deliveryCount } = agent;
       
           // Calculate the new rating and update completed deliveries
-          const newRating = (prevRating * deliveryCount + parseInt(rating)) / (deliveryCount + 1);
+          const updatedRating = (parseInt(rating) * parseInt(deliveryCount) + parseInt(newRating)) / (deliveryCount + 1);
       
           // Update the agent with the new rating and increment completed deliveries
           const updatedAgent = await prisma.agent.update({
             where: { agent_id: parseInt(id) },
             data: {
-              rating: parseFloat(newRating).toFixed(2),
+              rating: (parseFloat(updatedRating)).toFixed(2),
               deliveryCount: {
                 increment: 1,
               },
