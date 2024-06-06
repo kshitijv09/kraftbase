@@ -58,7 +58,7 @@ model Order {
   delivery_status  String?
   delivery_address String
   quantity         Int        @default(1)
-  amount           Decimal  
+  amount           Int  
   restaurant_id    Int
   restaurant       Restaurant @relation(fields: [restaurant_id], references: [restaurant_id])
   user_id          Int

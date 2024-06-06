@@ -32,8 +32,8 @@ const placeOrder = async (req, res) => {
       const orders = await Promise.all(
         menuItems.map(async (menu) => {
           const  price  = await fetchMenuDetails(menu.menuId);
-          const amount = parseFloat(parseInt(menu.quantity) * price).toFixed(2);
-          totalAmount += parseFloat(amount);
+          const amount = parseInt(menu.quantity * price);
+          totalAmount += parseInt(amount);
   
           return prisma.order.create({
             data: {
