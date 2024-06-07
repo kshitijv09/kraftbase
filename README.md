@@ -37,7 +37,9 @@ The following endpoints are available in this food delivery application:
 
 Description: Retrieve a list of all restaurants available online at the given hour.
 
-Example Response:{
+Example Response:
+```json
+{
     "restaurants": [
          {
         "restaurant_id": 2,
@@ -55,11 +57,14 @@ Example Response:{
     },
     ]
 }
+```
 #### `POST user/order`
 
 Description: Place the order from the available restaurants.
 
-Example Request:{
+Example Request:
+```json
+{
     "restaurantId":2,
     "userId":1,
     "deliveryAddress":"H-2/3 Koramangala Bangalore, Karnataka",
@@ -68,8 +73,10 @@ Example Request:{
         {"menuId":5,"quantity":2}
     ]
 }
-
-Example Response:{
+```
+Example Response:
+```json
+{
     "orderId": "33a182a6-e90b-411b-a316-48052586a2d0",
     "orders": [
         {
@@ -89,16 +96,20 @@ Example Response:{
     ],
     "totalAmount": "450.00"
 }
-
+```
 #### `PUT user/rateorder/:orderId`
 
 Description: Rate delivery order (1-5)
 
-Example Request:{
+Example Request:
+```json
+{
     "rating":3
 }
-
-Example Response:{
+```
+Example Response:
+```json
+{
 [
     {
         "order_serial_no": 18,
@@ -130,30 +141,36 @@ Example Response:{
     }
 ]
 }
-
+```
 #### `PUT user/rateagent/:agentId`
 
 Description: Rate delivery agent (1-5)
 
-Example Request:{
+Example Request:
+```json
+{
     "newRating":5
 }
-
-Example Response:{
+```
+Example Response:
+```json
+{
     "agent_id": 2,
     "name": "Anoop",
     "rating": "4.17",
     "availability": false,
     "deliveryCount": 6
 }
-
+```
 ### Restaurant Service
 
 #### `POST restaurant/add`
 
 Description: Add a restaurant along with its menu
 
-Example Request:{
+Example Request:
+```json
+{
     "name":"Idrees Biryani",
     "address":"Major Road, Kolkata WB",
     "availability":"online",
@@ -161,8 +178,10 @@ Example Request:{
         {"item":"Biryani","price":100.00}
     ]
 }
-
-Example Response:{
+```
+Example Response:
+```json
+{
     "restaurant_id": 10,
     "name": "Idrees Biryani",
     "address": "Major Road, Kolkata WB",
@@ -176,18 +195,22 @@ Example Response:{
         }
     ]
 }
-
+```
 #### `PUT restaurant/update/:restaurantId`
 
 Description: Update menu as well as availability status (online/offline)
-Example Request:{
+Example Request:
+```json
+{
     "availability":"offline",
      "menus":[
         {"menu_id":7,"item":"Samosa","price":45}
      ]
 }
-
-Example Response:{
+```
+Example Response:
+```json
+{
     "restaurant_id": 3,
     "name": "Flying Saucer",
     "address": " Sector-5, Ashiyana Road,Somewhere, Lucknow",
@@ -201,17 +224,21 @@ Example Response:{
         }
     ]
 }
-
+```
 #### `PUT restaurant/approve/:orderId`
 
 Description: Accept or reject an order. Assign an available delivery agent if order accepted.
 
-Example Request:{
+Example Request:
+```json
+{
     "acceptStatus":"accepted",
     "deliveryStatus":"inTransit"
 }
-
-Example Response:{
+```
+Example Response:
+```json
+{
     "totalAmount": 450,
     "updatedOrder": [
         {
@@ -230,18 +257,22 @@ Example Response:{
         }
     ]
 }
-
+```
 ### Delivery Agent Service
 
 #### `PUT agent/update/:orderId`
 
 Description: Update Order status (inTransit/completed)
 
-Example Request:{
+Example Request:
+```json
+{
     "deliveryStatus":"completed"
 }
-
-Example Response:{
+```
+Example Response:
+```json
+{
     "updatedOrders": [
         {
             "order_serial_no": 7,
@@ -259,7 +290,7 @@ Example Response:{
         }
     ]
 }
-
+```
 ## Tech Stack
 
 - **Node.js**: JavaScript runtime for building the server-side application.
